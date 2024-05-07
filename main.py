@@ -1,6 +1,7 @@
 ''''''
 from random import randint
 from math import log2
+import matplotlib.pyplot as plt
 
 def send_none(f):
     def wrapper(*args, **kwargs):
@@ -60,19 +61,40 @@ class LifeSimulation:
     def _study(self):
         while True:
             hour = yield
-            self.tiredness += randint(log2(self.tiredness), 2*log2(self.tiredness))
-            self.hunger -= randint(log2(self.hunger/2), 2*log2(self.hunger/2))
+            self.tiredness += randint(10, 15)
+            self.hunger -= randint(int(log2(self.hunger/2)), int(2*log2(self.hunger/2)))
             if hour in (13,20):
                 self.current_state = self.eat
             if hour == 23:
                 self.current_state = self.sleep
 
 def simulate_life(days: int):
+    hours, hunger_levels, tiredness_levels = [], [], []
     simulator = LifeSimulation()
+
     for day in range(days):
         print(f'DAY {day}: ')
         for hour in range(24):
+            hours.append(hour + day * 24)
+            hunger_levels.append(simulator.hunger)
+            tiredness_levels.append(simulator.tiredness)
             simulator.send(hour)
-            print(f'HOUR: {hour}, {simulator.current_state}')
+            print(f'HOUR: {hour}, {simulator.current_state}, tire: {simulator.tiredness}')
+    return hours, hunger_levels, tiredness_levels
 
-simulate_life(5)
+# simulate_life(5)
+
+def plot_simulation(days: int):
+    # simulator = LifeSimulation()
+    res = simulate_life(days)
+
+    plt.plot(res[0], res[1], label='Hunger')
+    plt.plot(res[0], res[2], label='Tiredness')
+    plt.xlabel('Hour')
+    plt.ylabel('Level')
+    plt.title('Hunger and Tiredness Levels Over Time')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+plot_simulation(5)

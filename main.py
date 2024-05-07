@@ -1,4 +1,6 @@
 ''''''
+from random import randint
+from math import log2
 
 def send_none(f):
     def wrapper(*args, **kwargs):
@@ -10,6 +12,10 @@ def send_none(f):
 class LifeSimulation:
     ''''''
     def __init__(self) -> None:
+        self.hunger = 100
+        self.sleep = 100
+        self.tiredness = 0
+
         self.start = self._create_start()
         self.sleep = self._sleep()
         self.eat = self._eat()
@@ -44,6 +50,7 @@ class LifeSimulation:
     def _eat(self):
         while True:
             hour = yield
+            self.hunger = min(self.hunger+randint(20,40), 100)
             if hour in (8,15):
                 self.current_state = self.study
             if hour == 21:
@@ -53,7 +60,9 @@ class LifeSimulation:
     def _study(self):
         while True:
             hour = yield
-            if hour == 13:
+            self.tiredness += randint(log2(self.tiredness), 2*log2(self.tiredness))
+            self.hunger -= randint(log2(self.hunger/2), 2*log2(self.hunger/2))
+            if hour in (13,20):
                 self.current_state = self.eat
             if hour == 23:
                 self.current_state = self.sleep
@@ -61,9 +70,9 @@ class LifeSimulation:
 def simulate_life(days: int):
     simulator = LifeSimulation()
     for day in range(days):
+        print(f'DAY {day}: ')
         for hour in range(24):
             simulator.send(hour)
             print(f'HOUR: {hour}, {simulator.current_state}')
-        print(f'DAY {day}: ')
 
-# simulate_life(5)
+simulate_life(5)

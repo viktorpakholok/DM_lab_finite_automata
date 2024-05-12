@@ -1,20 +1,23 @@
-''''''
+'''The fourth laboratory on discrete mathematics about finite automata'''
+
 import random
-from math import log2
 import matplotlib.pyplot as plt
 
-def send_none(f):
+def send_none(func):
+    '''A decorator function that sends a None value to a coroutine's first yield point'''
     def wrapper(*args, **kwargs):
-        v = f(*args, **kwargs)
-        v.send(None)
-        return v
+        var = func(*args, **kwargs)
+        var.send(None)
+        return var
     return wrapper
 
 class LifeSimulation:
-    ''''''
+    '''
+    A class representing a life simulation with hunger, tiredness, mental health, and success levels
+    '''
     def __init__(self) -> None:
         self.hunger = 100
-        self.tiredness = 0
+        self.tiredness = 100
         self.mental_health = 100
         self.success = 0
         self.states = {'sleep': 0, 'eat': 0, 'study': 0, 'exercise': 0, 'super_study': 0}
@@ -30,6 +33,7 @@ class LifeSimulation:
         self.stopped = False
 
     def send(self, hour):
+        '''Sends the hour to the current state coroutine'''
         try:
             self.current_state.send(hour)
         except StopIteration:
@@ -37,6 +41,7 @@ class LifeSimulation:
 
     @send_none
     def _create_start(self):
+        """Coroutine representing the starting state of the simulation"""
         while True:
             hour = yield
             if hour == 0:
@@ -44,6 +49,7 @@ class LifeSimulation:
 
     @send_none
     def _sleep(self):
+        """Coroutine representing the sleep state of the simulation"""
         while True:
             hour = yield
             self.states['sleep'] += 1
@@ -56,6 +62,7 @@ class LifeSimulation:
 
     @send_none
     def _eat(self):
+        """Coroutine representing the eat state of the simulation"""
         while True:
             hour = yield
             self.states['eat'] += 1
@@ -76,13 +83,14 @@ class LifeSimulation:
                 self.current_state = self.study
     @send_none
     def _study(self):
+        """Coroutine representing the study state of the simulation"""
         while True:
             hour = yield
             self.states['study'] += 1
             self.tiredness = min(self.tiredness+random.randint(10, 15), 100)
             self.mental_health = max(0, self.mental_health - random.randint(10,15))
-            self.success += random.randint(int(10-self.tiredness/10+self.mental_health/10), int(20-self.tiredness/10+self.mental_health/10))
-            # print(f'random: {int((self.hunger/2)**(1/1.5)), int(self.hunger**(1/1.5))}')
+            self.success += random.randint(int(10-self.tiredness/10+self.mental_health/10), \
+int(20-self.tiredness/10+self.mental_health/10))
             self.hunger = max(0, self.hunger-random.randint(7,15))
             if hour in (7,13,20):
                 self.current_state = self.eat
@@ -92,6 +100,7 @@ class LifeSimulation:
 
     @send_none
     def _exercise(self):
+        """Coroutine representing the exercise state of the simulation"""
         while True:
             hour = yield
             self.states['exercise'] += 1
@@ -108,6 +117,7 @@ class LifeSimulation:
 
     @send_none
     def _super_study(self):
+        """Coroutine representing the super_study state of the simulation"""
         while True:
             hour = yield
             self.states['super_study'] += 1
@@ -122,10 +132,16 @@ class LifeSimulation:
 
     @property
     def overall(self):
+        """
+        Calculates the overall well-being based on hunger, tiredness, mental health, and success 
+        levels
+        """
         return (self.hunger - self.tiredness + self.mental_health + self.success)/4
 
 def simulate_life(days: int):
-    hours, hunger_levels, tiredness_levels, mental_levels, success_levels, overall_levels = [], [], [], [], [], []
+    """Simulates life for the specified number of days"""
+    hours, hunger_levels, tiredness_levels, mental_levels, success_levels, overall_levels = \
+[], [], [], [], [], []
     simulator = LifeSimulation()
 
     for day in range(days):
@@ -147,17 +163,14 @@ def simulate_life(days: int):
         # mental_levels.append(simulator.mental_health)
         # success_levels.append(simulator.success)
 
-    return hours, hunger_levels, tiredness_levels, mental_levels, success_levels, overall_levels, {key: val/days for key, val in simulator.states.items()}
-
-# simulate_life(5)
+    return hours, hunger_levels, tiredness_levels, mental_levels, success_levels, overall_levels, \
+{key: val/days for key, val in simulator.states.items()}
 
 def plot_simulation(days: int):
+    """Plots the simulation results for the specified number of days"""
     res = simulate_life(days)
-    # print(res)
 
-    fig, axs = plt.subplots(3, 2, figsize=(20, 12))
-
-    # print(axs)
+    axs = plt.subplots(3, 2, figsize=(20, 12))[1]
 
     axs[0][0].plot(res[0], res[1], label='Hunger', color = 'red')
     axs[0][0].set_xlabel('Hour')
@@ -194,7 +207,8 @@ def plot_simulation(days: int):
     axs[2][0].legend()
     axs[2][0].grid(True)
 
-    axs[2][1].bar(res[6].keys(), res[6].values(), label='States', color = ['tab:red', 'tab:orange', 'tab:cyan', 'lime', 'blueviolet'])
+    axs[2][1].bar(res[6].keys(), res[6].values(), label='States', color = \
+['tab:red', 'tab:orange', 'tab:cyan', 'lime', 'blueviolet'])
     axs[2][1].set_xlabel('State')
     axs[2][1].set_ylabel('States Level')
     axs[2][1].set_title('States Level Over Time')
@@ -204,4 +218,4 @@ def plot_simulation(days: int):
     plt.tight_layout()
     plt.show()
 
-plot_simulation(10)
+plot_simulation(1)

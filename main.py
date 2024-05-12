@@ -57,9 +57,10 @@ class LifeSimulation:
             self.mental_health = min(100, self.mental_health + random.randint(10,15))
             if hour == 1:
                 self.success = 0
-            if hour == 7:
+            if hour == 7 and random.random() >= 0.4:
                 self.current_state = self.eat
             elif random.random() >= self.tiredness/100 + 0.7:
+                print("I don't have time to eat, I have to study")
                 self.current_state = self.study
 
     @send_none
@@ -75,11 +76,11 @@ class LifeSimulation:
             if hour >= 23 and rand >= 0.2:
                 self.current_state = self.sleep
             elif rand >= 0.8*(self.hunger+20)/80:
+                print("It's never a bad idea to eat one more time")
                 self.current_state = self.eat
             elif rand >= 0.5:
+                print('What a nice weather to move a little bit')
                 self.current_state = self.exercise
-            elif hour == 22:
-                self.current_state = self.sleep
             else:
                 self.current_state = self.study
     @send_none
@@ -108,6 +109,7 @@ int(20-self.tiredness/10+self.mental_health/10))
             self.hunger = max(0, self.hunger-random.randint(7,12))
             self.mental_health = min(100, self.mental_health+random.randint(20,30))
             if 8 <= hour <= 20 and random.random() >= 0.8:
+                print('I feel my powers')
                 self.current_state = self.super_study
             elif 8 <= hour <= 22:
                 self.current_state = self.study
@@ -125,8 +127,8 @@ int(20-self.tiredness/10+self.mental_health/10))
             self.mental_health = max(0, self.mental_health-random.randint(15,20))
             if hour >= 23 or hour <= 6:
                 self.current_state = self.sleep
-                self.success = 0
             elif random.random() <= self.tiredness/80:
+                print("I am to tired to continue to study like that")
                 self.current_state = self.study
 
     @property
@@ -153,7 +155,8 @@ def simulate_life(days: int):
             temp[4].append(simulator.success)
             temp[5].append(simulator.overall)
             simulator.send(hour)
-            print(f'HOUR: {hour}, CUR_STATE: {simulator.current_state}')
+            print(f'HOUR: {hour}, CUR_STATE: \
+{str(simulator.current_state).split('._')[1].split(' ', maxsplit=1)[0]}')
 
         if days <= 25:
             for ind, tem in enumerate(temp):
@@ -219,4 +222,4 @@ def plot_simulation(days: int):
     plt.tight_layout()
     plt.show()
 
-plot_simulation(365)
+plot_simulation(10)#Change amount of days here

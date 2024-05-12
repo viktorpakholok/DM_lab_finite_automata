@@ -1,0 +1,22 @@
+digraph {
+    start_ [label= "", shape=none, height=.0, width=.0]
+    start_ -> sleep [fillcolor="#a6cee3" color="#1f78b4"]
+    sleep -> eat [fillcolor="#a6cee3" color="#1f78b4" label="  if hour == 7"]
+    sleep -> study [fillcolor="#a6cee3" color="#1f78b4" label="elif random.random() >= self.tiredness/100 + 0.7"]
+    
+    eat -> sleep [fillcolor="#a6cee3" color="#1f78b4" label="if hour >= 23 and random.random() >= 0.2"]
+    eat -> eat [fillcolor="#a6cee3" color="#1f78b4" label="  elif random.random() >= 0.8*(self.hunger+20)/80"]
+    eat -> exercise [fillcolor="#a6cee3" color="#1f78b4" label="elif random.random() >= 0.5"]
+    eat -> study [fillcolor="#a6cee3" color="#1f78b4" label="else"]
+    
+    study -> eat [fillcolor="#a6cee3" color="#1f78b4" label="if hour in (7,13,20)"]
+    study -> sleep [fillcolor="#a6cee3" color="#1f78b4" label="elif hour == 23"]
+    study -> study [fillcolor="#a6cee3" color="#1f78b4" label="\nelse"]
+    
+    exercise -> super_study [fillcolor="#a6cee3" color="#1f78b4" label="if 8 <= hour <= 20 and random.random() >= 0.8"]
+    exercise -> study [fillcolor="#a6cee3" color="#1f78b4" label="elif 8 <= hour <= 22"]
+    exercise -> sleep [fillcolor="#a6cee3" color="#1f78b4" label="elif hour >= 23"]
+    
+    super_study -> sleep [fillcolor="#a6cee3" color="#1f78b4" label="  if hour >= 23 or hour <= 6"]
+    super_study -> study [fillcolor="#a6cee3" color="#1f78b4" label="elif random.random() <= self.tiredness/80"]
+}

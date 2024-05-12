@@ -14,6 +14,7 @@ Also in this automate person, whose life will be simulated, have differnt stats 
 - Tiredness
 - Mental_health
 - Success
+
 Theese parameters allow to simulate sb's life more accurately
 
 # Random events
